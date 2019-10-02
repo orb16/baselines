@@ -30,11 +30,9 @@ devtools::install_github("orb16/baselines")
 
 ## Example
 
-This is a basic example which shows you how to solve a common problem:
-
-```{r example}
-library(baselines)
-library(vegan)
+```{r example, results = "hide", dpi = 600}
+library(baselines, quietly = TRUE)
+library(vegan, quietly = TRUE)
 
 data("mite")
 data("mite.env")
