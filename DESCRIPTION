@@ -1,0 +1,16 @@
+Package: baselines
+Type: Package
+Title: Calculates Distance From Desired Baseline
+Version: 0.1.0
+Authors@R: person("Olivia", "Burge", email = "olivia.burge@gmail.com", role = c("aut", "cre"))
+Maintainer: Olivia Burge <olivia.burge@gmail.com>
+Description: Builds off the vegan package with functions we have been using with paleo data.
+    Use four spaces when indenting paragraphs within the Description.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Depends: 
+    sp,
+    rgeos,
+    vegan
+RoxygenNote: 6.1.1

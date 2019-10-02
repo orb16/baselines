@@ -1,0 +1,73 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+# baselines
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+The goal of baselines is to share code for calculating distance from baselines in ordination space. 
+
+## Installation
+
+You can install this package from github! First you need to have `devtools` installed. If not, run `install.packages("devtools")`, before running the code below.
+
+``` r
+# install.packages("devtools")
+devtools::install_github("orb16/baselines")
+```
+
+## Example
+
+This is a basic example which shows you how to solve a common problem:
+
+```{r example}
+library(baselines)
+library(vegan)
+
+data("mite")
+data("mite.env")
+met <- vegan::metaMDS(mite, "jaccard")
+dlist <- calcMyDists(metadf = mite.env, ord = met, group = "Topo", reflev = "Hummock")
+
+# what is the output?
+
+class(dlist)
+names(dlist)
+
+head(dlist[[1]])
+
+par(mfrow = c(1, 3))
+plot(met, type = "n")
+plot(dlist[["baseline_polygon"]], add = TRUE,
+     col = adjustcolor("forestgreen", 0.2),
+     border = NA)
+points(dlist[["all_points"]][dlist[["all_points"]]$Topo == "Hummock", ], col = "forestgreen",
+       pch = 16)
+points(dlist[["all_points"]][dlist[["all_points"]]$Topo == "Blanket", ], col = "black",
+       pch = 16)
+with(dlist[["distDF"]][dlist[["distDF"]]$Topo == "Blanket", ], plot(x = Shrub, y = distEllipse, xlab = "Shrub",
+                                                                    ylab = "Distance from baseline"))
+plot(met, type = "n")
+plot(dlist[["baseline_polygon"]], add = TRUE,
+     col = adjustcolor("forestgreen", 0.2),
+     border = NA)
+with(dlist[["distDF"]][dlist[["distDF"]]$Topo == "Hummock", ],
+     points(x = NMDS1, y = NMDS2, cex = distEllipse, col = "forestgreen"))
+with(dlist[["distDF"]][dlist[["distDF"]]$Topo == "Blanket", ],
+     points(x = NMDS1, y = NMDS2, cex = distEllipse, col = "black"))
+
+
+```
+
