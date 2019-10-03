@@ -6,7 +6,6 @@ Date: 2019-10-03
 Authors@R: person("Olivia", "Burge", email = "olivia.burge@gmail.com", role = c("aut", "cre"))
 Maintainer: Olivia Burge <olivia.burge@gmail.com>
 Description: Builds off the vegan package with functions we have been using with paleo data.
-    Use four spaces when indenting paragraphs within the Description.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
