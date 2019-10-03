@@ -62,7 +62,7 @@
 #' with(dlist[["distDF"]][dlist[["distDF"]]$Topo == "Blanket", ],
 #' plot(x = Shrub, y = distEllipse, xlab = "Shrub",
 #' ylab = "Distance from baseline"))
-#' mtext(side = 3, "Distance from baseline as a function\nof another column in dataset (shrubs)")
+#' mtext(side = 3, "Distance from baseline as a function\nof another col in dataset (shrubs)")
 
 
 calcMyDists <- function(metadf,
