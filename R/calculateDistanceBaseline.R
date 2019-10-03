@@ -71,15 +71,6 @@ calcMyDists <- function(metadf,
                         reflev = "Pre-human",
                         ordiType = "sd", conf = TRUE){
 
-  # if (!requireNamespace("sp", quietly = TRUE)) {
-  #   stop("Package \"sp\" needed for this function to work. Please install it.",
-  #        call. = FALSE)
-  # }
-  # if (!requireNamespace("rgeos", quietly = TRUE)) {
-  #   stop("Package \"rgeos\" needed for this function to work. Please install it.",
-  #        call. = FALSE)
-  # }
-
   metaScores <- data.frame(metadf, vegan::scores(ord))
 
   allPts2 <- metaScores[, c("NMDS1", "NMDS2")]
