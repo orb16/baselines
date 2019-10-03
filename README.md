@@ -5,6 +5,7 @@
 
 <!-- badges: start -->
 
+[![DOI](https://zenodo.org/badge/212453101.svg)](https://zenodo.org/badge/latestdoi/212453101)
 <!-- badges: end -->
 
 The goal of baselines is to share code for calculating distance from

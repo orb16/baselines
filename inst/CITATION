@@ -1,0 +1,13 @@
+citHeader("To cite baselines in publications use:")
+
+citEntry(entry = "Manual",
+title = "baselines: A package to calculate baselines from multivariate data",
+author = person(given = "Olivia Rata", family = "Burge",, email = "olivia.burge@gmail.com", comment = c(ORCID = "0000-0001-7719-6695"),
+role = c("aut", "cre")),
+year = "2019",
+note = "R package version 0.0.9",
+url = "http://github.com/orb16/baseliens",
+doi = "10.5281/zenodo.810564",
+
+textVersion = paste("Olivia R. Burge (2019) baselines. R package version 0.0.9. http://github.com/orb16/baselines DOI: 10.5281/zenodo.3470343")
+)
