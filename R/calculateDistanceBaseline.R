@@ -71,7 +71,7 @@ calcMyDists <- function(metadf,
                         reflev = "Pre-human",
                         ordiType = "sd", conf = TRUE){
 
-  metaScores <- data.frame(metadf, vegan::scores(ord))
+  metaScores <- data.frame(metadf, vegan::scores(ord, "sites"))
 
   allPts2 <- metaScores[, c("NMDS1", "NMDS2")]
   spts <- sp::SpatialPoints(allPts2)
@@ -80,10 +80,10 @@ calcMyDists <- function(metadf,
 
   if(conf){
     lt <- vegan::ordiellipse(ord, group = metaScores[[group]],
-                      kind = ordiType, draw = "none", conf = 0.95)
+                      kind = ordiType, draw = "none", conf = 0.95, display = "sites")
   } else {
     lt <- vegan::ordiellipse(ord, group = metaScores[[group]],
-                      kind = ordiType, draw = "none")
+                      kind = ordiType, draw = "none", display = "sites")
   }
 
 
@@ -105,14 +105,14 @@ calcMyDists <- function(metadf,
 
       dists <- apply(rgeos::gDistance(spts, phPoly, byid=TRUE),2,min)
 
-      cent <- sp::SpatialPoints(data.frame(NMDS1 = lt[[g]]$center[1], NMDS2 = lt[[g]]$center[2], row.names = NULL))
+      cent <- sp::SpatialPoints(data.frame(NMDS1 = lt[[reflev]]$center[1], NMDS2 = lt[[reflev]]$center[2], row.names = NULL))
 
       centDist <- rgeos::gDistance(spts, cent, byid = TRUE)
 
       distPH <- data.frame(metaScores, distEllipse = dists,
                            disCentroid = as.vector(centDist),
-                           centroidNMDS1 =  lt[[g]]$center[1],
-                           centroidNMDS2 = lt[[g]]$center[2])
+                           centroidNMDS1 =  lt[[reflev]]$center[1],
+                           centroidNMDS2 = lt[[reflev]]$center[2])
 
 
 
