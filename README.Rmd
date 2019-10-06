@@ -31,7 +31,7 @@ devtools::install_github("orb16/baselines")
 
 ## Example
 
-```{r example, results = "hide", dpi = 600}
+```{r example, results = "hide", dpi = 600, fig.height = 8}
 library(baselines, quietly = TRUE)
 library(vegan, quietly = TRUE)
 
