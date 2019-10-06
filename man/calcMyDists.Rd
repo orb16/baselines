@@ -31,8 +31,9 @@ Calculates distance from ellipse and distance from centroid.
 data("mite")
 data("mite.env")
 met <- metaMDS(mite, "jaccard")
-dlist <- calcMyDists(metadf = mite.env, ord = met, group = "Topo", reflev = "Hummock")
-par(mfrow = c(1, 3))
+dlist <- calcMyDists(metadf = mite.env, ord = met,
+group = "Topo", reflev = "Hummock")
+par(mfrow = c(2, 2))
 plot(met, type = "n")
 plot(dlist[["baseline_polygon"]], add = TRUE,
 col = adjustcolor("forestgreen", 0.2),
@@ -41,14 +42,37 @@ points(dlist[["all_points"]][dlist[["all_points"]]$Topo == "Hummock", ], col = "
 pch = 16)
 points(dlist[["all_points"]][dlist[["all_points"]]$Topo == "Blanket", ], col = "black",
 pch = 16)
-with(dlist[["distDF"]][dlist[["distDF"]]$Topo == "Blanket", ], plot(x = Shrub, y = distEllipse, xlab = "Shrub",
-ylab = "Distance from baseline"))
+legend("topleft", pch = c(16, 16, 15), col = c("forestgreen", "black", adjustcolor("forestgreen", 0.5)),
+legend = c("Hummock", "Blanket", "95\% CI Ellipse"))
+mtext(side = 3, "95\% CI around centroid calculated")
+
+
 plot(met, type = "n")
 plot(dlist[["baseline_polygon"]], add = TRUE,
 col = adjustcolor("forestgreen", 0.2),
 border = NA)
+mtext(side = 3, "Points sized by distance from baseline")
 with(dlist[["distDF"]][dlist[["distDF"]]$Topo == "Hummock", ],
-points(x = NMDS1, y = NMDS2, cex = distEllipse, col = "forestgreen"))
+points(x = NMDS1, y = NMDS2, cex = distEllipse + 0.5, col = "forestgreen"))
 with(dlist[["distDF"]][dlist[["distDF"]]$Topo == "Blanket", ],
-points(x = NMDS1, y = NMDS2, cex = distEllipse, col = "black"))
+points(x = NMDS1, y = NMDS2, cex = distEllipse + 0.5, col = "black"))
+
+
+plot(met, type = "n")
+plot(dlist[["baseline_polygon"]], add = TRUE,
+col = adjustcolor("forestgreen", 0.2),
+border = NA)
+mtext(side = 3, "Blanket points by shrub prevalence")
+colDF <- data.frame(Shrub = c("None", "Few", "Many"),
+cols = I(c("skyblue", "cornflowerblue", "darkblue")))
+with(dlist[["distDF"]][dlist[["distDF"]]$Topo == "Hummock", ],
+points(x = NMDS1, y = NMDS2,  col = "grey"))
+with(dlist[["distDF"]][dlist[["distDF"]]$Topo == "Blanket", ],
+points(x = NMDS1, y = NMDS2, col =  colDF[match(Shrub, colDF$Shrub), "cols"]))
+legend("topleft", pch = 1, legend = colDF$Shrub, col = colDF$cols)
+
+with(dlist[["distDF"]][dlist[["distDF"]]$Topo == "Blanket", ],
+plot(x = Shrub, y = distEllipse, xlab = "Shrub",
+ylab = "Distance from baseline"))
+mtext(side = 3, "Distance from baseline as a function\\nof another col in dataset (shrubs)")
 }
