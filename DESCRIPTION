@@ -13,4 +13,6 @@ Depends:
     sp,
     rgeos,
     vegan
+Imports:
+  boral
 RoxygenNote: 6.1.1

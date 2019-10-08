@@ -5,7 +5,7 @@
 \title{Calculates distance from ellipse and distance from centroid.}
 \usage{
 calcMyDists(metadf, ord, group = "Time_period", reflev = "Pre-human",
-  ordiType = "sd", conf = TRUE)
+  ordiType = "sd", addConf = TRUE)
 }
 \arguments{
 \item{metadf}{metadata (e.g. groups). Needs to be same length and order as rows that went into ordination.}
@@ -18,7 +18,7 @@ calcMyDists(metadf, ord, group = "Time_period", reflev = "Pre-human",
 
 \item{ordiType}{what sort of ordiellipse? Options are all those which ordiellipse accepts}
 
-\item{conf}{use 95 CI or not? See ordiellipse options.}
+\item{addConf}{use 95 CI or not? See ordiellipse options.}
 }
 \value{
 A list, with a dataframe containing the metadf and distance from baseline, second, a spatial points object. Third, the baseline ellipse created as a spatial object.
@@ -38,11 +38,17 @@ plot(met, type = "n")
 plot(dlist[["baseline_polygon"]], add = TRUE,
 col = adjustcolor("forestgreen", 0.2),
 border = NA)
-points(dlist[["all_points"]][dlist[["all_points"]]$Topo == "Hummock", ], col = "forestgreen",
+points(dlist[["all_points"]][
+dlist[["all_points"]]$Topo == "Hummock", ],
+col = "forestgreen",
 pch = 16)
-points(dlist[["all_points"]][dlist[["all_points"]]$Topo == "Blanket", ], col = "black",
+points(dlist[["all_points"]][
+dlist[["all_points"]]$Topo == "Blanket", ],
+col = "black",
 pch = 16)
-legend("topleft", pch = c(16, 16, 15), col = c("forestgreen", "black", adjustcolor("forestgreen", 0.5)),
+legend("topleft", pch = c(16, 16, 15),
+col = c("forestgreen", "black",
+adjustcolor("forestgreen", 0.5)),
 legend = c("Hummock", "Blanket", "95\% CI Ellipse"))
 mtext(side = 3, "95\% CI around centroid calculated")
 
@@ -52,10 +58,14 @@ plot(dlist[["baseline_polygon"]], add = TRUE,
 col = adjustcolor("forestgreen", 0.2),
 border = NA)
 mtext(side = 3, "Points sized by distance from baseline")
-with(dlist[["distDF"]][dlist[["distDF"]]$Topo == "Hummock", ],
-points(x = NMDS1, y = NMDS2, cex = distEllipse + 0.5, col = "forestgreen"))
-with(dlist[["distDF"]][dlist[["distDF"]]$Topo == "Blanket", ],
-points(x = NMDS1, y = NMDS2, cex = distEllipse + 0.5, col = "black"))
+with(dlist[["distDF"]][
+dlist[["distDF"]]$Topo == "Hummock", ],
+points(x = NMDS1, y = NMDS2, cex = distEllipse + 0.5,
+col = "forestgreen"))
+with(dlist[["distDF"]][
+dlist[["distDF"]]$Topo == "Blanket", ],
+points(x = NMDS1, y = NMDS2, cex = distEllipse + 0.5,
+col = "black"))
 
 
 plot(met, type = "n")
@@ -67,12 +77,62 @@ colDF <- data.frame(Shrub = c("None", "Few", "Many"),
 cols = I(c("skyblue", "cornflowerblue", "darkblue")))
 with(dlist[["distDF"]][dlist[["distDF"]]$Topo == "Hummock", ],
 points(x = NMDS1, y = NMDS2,  col = "grey"))
-with(dlist[["distDF"]][dlist[["distDF"]]$Topo == "Blanket", ],
-points(x = NMDS1, y = NMDS2, col =  colDF[match(Shrub, colDF$Shrub), "cols"]))
+with(dlist[["distDF"]][
+dlist[["distDF"]]$Topo == "Blanket", ],
+points(x = NMDS1, y = NMDS2, col =  colDF[
+match(Shrub, colDF$Shrub), "cols"]))
 legend("topleft", pch = 1, legend = colDF$Shrub, col = colDF$cols)
 
 with(dlist[["distDF"]][dlist[["distDF"]]$Topo == "Blanket", ],
 plot(x = Shrub, y = distEllipse, xlab = "Shrub",
 ylab = "Distance from baseline"))
 mtext(side = 3, "Distance from baseline as a function\\nof another col in dataset (shrubs)")
+
+# Example with Boral
+## NOTE: As per the boral help, the values below MUST NOT be used in a real application;
+## they are only used here to make the examples run quick!!!
+example_mcmc_control <- list(n.burnin = 10, n.iteration = 100,
+                             n.thin = 1)
+data("mite")
+data("mite.env")
+miteBoral <- boral::boral(mite, family = "negative.binomial",
+mcmc.control = example_mcmc_control,
+lv.control = list(num.lv = 2),
+row.eff = "fixed",
+save.model = FALSE, calc.ics = FALSE)
+
+dlist <- calcMyDists(metadf = mite.env, ord = miteBoral,
+group = "Topo", reflev = "Hummock")
+par(mfrow = c(1, 2))
+boral::lvsplot(miteBoral, biplot = FALSE,
+col = "transparent",
+main = "Boral ordination")
+plot(dlist[["baseline_polygon"]], add = TRUE,
+col = adjustcolor("forestgreen", 0.2),
+border = NA)
+points(dlist[["all_points"]][dlist[["all_points"]]$Topo == "Hummock", ],
+col = "forestgreen",
+pch = 16)
+points(dlist[["all_points"]][dlist[["all_points"]]$Topo == "Blanket", ],
+col = "black",
+pch = 16)
+legend("topleft", pch = c(16, 16, 15),
+col = c("forestgreen", "black",
+adjustcolor("forestgreen", 0.5)),
+legend = c("Hummock", "Blanket", "95\% CI Ellipse"))
+mtext(side = 3, "95\% CI around centroid calculated")
+
+plot(met, type = "n", main = "NMDS ordination")
+plot(dlist[["baseline_polygon"]], add = TRUE,
+col = adjustcolor("forestgreen", 0.2),
+border = NA)
+points(dlist[["all_points"]][dlist[["all_points"]]$Topo == "Hummock", ], col = "forestgreen",
+pch = 16)
+points(dlist[["all_points"]][dlist[["all_points"]]$Topo == "Blanket", ], col = "black",
+pch = 16)
+legend("topleft", pch = c(16, 16, 15),
+col = c("forestgreen", "black",
+adjustcolor("forestgreen", 0.5)),
+legend = c("Hummock", "Blanket", "95\% CI Ellipse"))
+mtext(side = 3, "95\% CI around centroid calculated")
 }
