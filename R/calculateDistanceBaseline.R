@@ -134,6 +134,18 @@ calcEllipseDists <- function(metadf,
                         reflev = "Pre-human",
                         ordiType = "sd", addConf = TRUE){
 
+  if(! group %in% names(metadf)){
+    stop(
+      cat("The column name", paste0("'", group, "'"), "is not found in the metadf object, the column names of which are", paste0("'", names(metadf), "'"))
+      )
+  }
+
+  if(! reflev %in% as.character(unique(metadf[[group]]))){
+    stop(
+      cat(paste0("reflev '", reflev, "'"), "needs to be the column", group)
+         )
+  }
+
   # one method for vegan ordinations,
   # another method for boral
   if("metaMDS" %in% class(ord)){
