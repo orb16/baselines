@@ -15,4 +15,6 @@ Depends:
     vegan
 Imports:
   boral
+Suggests:
+  analogue
 RoxygenNote: 6.1.1

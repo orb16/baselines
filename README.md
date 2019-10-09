@@ -36,7 +36,7 @@ library(vegan, quietly = TRUE)
 data("mite")
 data("mite.env")
 met <- metaMDS(mite, "jaccard")
-dlist <- calcMyDists(metadf = mite.env, ord = met,
+dlist <- calcEllipseDists(metadf = mite.env, ord = met,
 group = "Topo", reflev = "Hummock")
 par(mfrow = c(2, 2))
 plot(met, type = "n")

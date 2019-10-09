@@ -21,7 +21,7 @@
 #' data("mite")
 #' data("mite.env")
 #' met <- metaMDS(mite, "jaccard")
-#' dlist <- calcMyDists(metadf = mite.env, ord = met,
+#' dlist <- calcEllipseDists(metadf = mite.env, ord = met,
 #' group = "Topo", reflev = "Hummock")
 #' par(mfrow = c(2, 2))
 #' plot(met, type = "n")
@@ -91,7 +91,7 @@
 #' row.eff = "fixed",
 #' save.model = FALSE, calc.ics = FALSE)
 #'
-#' dlist <- calcMyDists(metadf = mite.env, ord = miteBoral,
+#' dlist <- calcEllipseDists(metadf = mite.env, ord = miteBoral,
 #' group = "Topo", reflev = "Hummock")
 #' par(mfrow = c(1, 2))
 #' boral::lvsplot(miteBoral, biplot = FALSE,
@@ -128,7 +128,7 @@
 
 
 
-calcMyDists <- function(metadf,
+calcEllipseDists <- function(metadf,
                         ord,
                         group = "Time_period",
                         reflev = "Pre-human",
