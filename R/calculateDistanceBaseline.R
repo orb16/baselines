@@ -177,7 +177,7 @@ calcEllipseDists <- function(metadf,
 
   } else if("boral" %in% class(ord)){
 
-    ordScores <- data.frame(boral::lvsplot(ord,
+    ordScores <- data.frame(lvsplotData(ord,
                                     return.vals = TRUE,
                                     biplot = FALSE)$scaled.lvs)
     names(ordScores) <- c("lvs1", "lvs2")
@@ -243,6 +243,8 @@ calcEllipseDists <- function(metadf,
   centDist <- rgeos::gDistance(spts, cent, byid = TRUE)
 
   distPH <- data.frame(metaScores,
+                       centroid1 = centreAxis1,
+                       centroid2 = centreAxis2,
                        distEllipse = dists,
                        disCentroid = as.vector(centDist))
 
