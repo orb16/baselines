@@ -58,11 +58,12 @@ calculateDistanceStart <- function(speciesData, metaData, idCol, distMethod){
 
   startPos <- which.min(names(df))
 
-  startDist <- df[1]; names(startDist) <- paste("dist", distMethod, sep = "_")
+  startDist <- data.frame(df[1]); names(startDist) <- paste("dist", distMethod, sep = "_")
   startDist$id <- row.names(startDist)
   names(startDist)[grep("id", names(startDist))] <- idCol
 
-  ret <- startDist[c(2,1)]; row.names(ret) <- NULL
+  ret2 <- merge(startDist, metaData, by = idCol)
+  ret <- ret2[c(names(metaData), paste("dist", distMethod, sep = "_"))]
 
   return(ret)
 
