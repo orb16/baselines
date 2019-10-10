@@ -51,6 +51,8 @@ calculateDistanceStart <- function(speciesData, metaData, idCol, distMethod){
   }
 
 
+  speciesData <- as.data.frame(speciesData)
+  metaData <- as.data.frame(metaData)
 
   row.names(speciesData) <- metaData[[idCol]]
 
@@ -61,6 +63,11 @@ calculateDistanceStart <- function(speciesData, metaData, idCol, distMethod){
   startDist <- data.frame(df[1]); names(startDist) <- paste("dist", distMethod, sep = "_")
   startDist$id <- row.names(startDist)
   names(startDist)[grep("id", names(startDist))] <- idCol
+  startDist[[idCol]] <- as.numeric(startDist[[idCol]])
+
+  if(! all.equal(startDist[[idCol]], metaData[[idCol]])) {
+    stop("Problem with non-equal id columns")
+  }
 
   ret2 <- merge(startDist, metaData, by = idCol)
   ret <- ret2[c(names(metaData), paste("dist", distMethod, sep = "_"))]
