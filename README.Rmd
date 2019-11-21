@@ -12,7 +12,7 @@ knitr::opts_chunk$set(
   out.width = "100%"
 )
 ```
-# baselines
+# baselines <img src='man/figures/logo.png' align="right" height="139" />
 
 <!-- badges: start -->
 [![DOI](https://zenodo.org/badge/212453101.svg)](https://zenodo.org/badge/latestdoi/212453101)
