@@ -4,6 +4,7 @@
 #' @param metaData  dataset with metadata, such as depth and age
 #' @param idCol name of column in metaData by which speciesData is ordered. Generally depth or year. Needs to be in ascending order (ie getting deeper or older), in the same order as the species data.
 #' @param distMethod the distance method to use. See ?vegan::vegdist for options.
+#' @param threshold keeps species only where those with a total summed abundance (not frequency) of more than or equal to the threshold. Default is zero.
 #'
 #' @return A dataframe with idCol and the distance for each point, including the distance from the first sample to itself.
 #' @export
@@ -23,7 +24,8 @@
 #' with(distFirst, plot(x = Age, y = dist_jaccard,
 #' ylab = "Jaccard distance"))
 #'
-calculateDistanceStart <- function(speciesData, metaData, idCol, distMethod){
+calculateDistanceStart <- function(speciesData, metaData, idCol, distMethod,
+                                   threshold = 0){
 
   # check that idCol is in the metadata df
   if(! idCol %in% names(metaData)){
@@ -51,7 +53,9 @@ calculateDistanceStart <- function(speciesData, metaData, idCol, distMethod){
   }
 
 
-  speciesData <- as.data.frame(speciesData)
+  speciesData <- as.data.frame(speciesData[colSums(speciesData) >= threshold])
+
+
   metaData <- as.data.frame(metaData)
 
   row.names(speciesData) <- metaData[[idCol]]

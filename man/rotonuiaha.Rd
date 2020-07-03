@@ -4,7 +4,9 @@
 \name{rotonuiaha}
 \alias{rotonuiaha}
 \title{Rotonuiaha pollen counts}
-\format{A data frame with 73 rows and 93 variables. The site column just records this is from Rotonuiaha. The year column is derived from radiocarbon dating. For details of the ecology of the core and site see Wilmshurst & McGlone (1996)}
+\format{
+A data frame with 73 rows and 93 variables. The site column just records this is from Rotonuiaha. The year column is derived from radiocarbon dating. For details of the ecology of the core and site see Wilmshurst & McGlone (1996).
+}
 \source{
 \url{http://onlinelibrary.wiley.com/doi/10.1111/cobi.12150/abstract}
 }

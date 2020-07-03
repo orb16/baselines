@@ -4,7 +4,7 @@
 \alias{calculateDistanceStart}
 \title{Caculate ecological distance from first sample}
 \usage{
-calculateDistanceStart(speciesData, metaData, idCol, distMethod)
+calculateDistanceStart(speciesData, metaData, idCol, distMethod, threshold = 0)
 }
 \arguments{
 \item{speciesData}{dataset with species abundance, pre-transformed if desired}
@@ -14,6 +14,8 @@ calculateDistanceStart(speciesData, metaData, idCol, distMethod)
 \item{idCol}{name of column in metaData by which speciesData is ordered. Generally depth or year. Needs to be in ascending order (ie getting deeper or older), in the same order as the species data.}
 
 \item{distMethod}{the distance method to use. See ?vegan::vegdist for options.}
+
+\item{threshold}{keeps species only where those with a total summed abundance (not frequency) of more than or equal to the threshold. Default is zero.}
 }
 \value{
 A dataframe with idCol and the distance for each point, including the distance from the first sample to itself.

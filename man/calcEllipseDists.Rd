@@ -4,8 +4,14 @@
 \alias{calcEllipseDists}
 \title{Calculates distance from ellipse and distance from centroid.}
 \usage{
-calcEllipseDists(metadf, ord, group = "Time_period",
-  reflev = "Pre-human", ordiType = "sd", addConf = TRUE)
+calcEllipseDists(
+  metadf,
+  ord,
+  group = "Time_period",
+  reflev = "Pre-human",
+  ordiType = "sd",
+  addConf = TRUE
+)
 }
 \arguments{
 \item{metadf}{metadata (e.g. groups). Needs to be same length and order as rows that went into ordination.}
@@ -86,7 +92,7 @@ legend("topleft", pch = 1, legend = colDF$Shrub, col = colDF$cols)
 with(dlist[["distDF"]][dlist[["distDF"]]$Topo == "Blanket", ],
 plot(x = Shrub, y = distEllipse, xlab = "Shrub",
 ylab = "Distance from baseline"))
-mtext(side = 3, "Distance from baseline as a function\\nof another col in dataset (shrubs)")
+mtext(side = 3, "Distance from baseline as a function\nof another col in dataset (shrubs)")
 
 # Example with Boral
 ## NOTE: As per the boral help, the values below MUST NOT be used in a real application;
