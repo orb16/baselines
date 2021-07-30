@@ -4,14 +4,21 @@
 \alias{calculateDistanceStart}
 \title{Caculate ecological distance from first sample}
 \usage{
-calculateDistanceStart(speciesData, metaData, idCol, distMethod, threshold = 0)
+calculateDistanceStart(
+  speciesData,
+  metaData,
+  idCol,
+  idColType,
+  distMethod,
+  threshold = 0
+)
 }
 \arguments{
 \item{speciesData}{dataset with species abundance, pre-transformed if desired}
 
 \item{metaData}{dataset with metadata, such as depth and age}
 
-\item{idCol}{name of column in metaData by which speciesData is ordered. Generally depth or year. Needs to be in ascending order (ie getting deeper or older), in the same order as the species data.}
+\item{idColType}{need to specify whether the idcol is a depth style or year style variable.}
 
 \item{distMethod}{the distance method to use. See ?vegan::vegdist for options.}
 
