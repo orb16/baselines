@@ -2,8 +2,8 @@
 #'
 #' @param speciesData dataset with species abundance, pre-transformed if desired
 #' @param metaData  dataset with metadata, such as depth and age
-#' @param idCol name of column in metaData by which speciesData is ordered. Generally depth or year. Needs to be in ascending order (ie getting deeper or older), in the same order as the species data.\
-#' @param idColType need to specify whether the idcol is a depth style or year style variable. 
+#' @param idCol name of column in metaData by which speciesData is ordered. Generally depth or year. Needs to be in ascending order (ie getting deeper or older), in the same order as the species data.
+#' @param idColType need to specify whether the idcol is a depth style or year style variable.
 #' @param distMethod the distance method to use. See ?vegan::vegdist for options.
 #' @param threshold keeps species only where those with a total summed abundance (not frequency) of more than or equal to the threshold. Default is zero.
 #'
@@ -20,12 +20,12 @@
 #' metaData <- abernethy[c("Depth", "Age")]
 #'
 #' distFirst <- calculateDistanceStart(speciesData, metaData,
-#' idCol = "Age", distMethod = "jaccard")
+#' idCol = "Age", distMethod = "jaccard", idColType = "year")
 #'
 #' with(distFirst, plot(x = Age, y = dist_jaccard,
 #' ylab = "Jaccard distance"))
 #'
-calculateDistanceStart <- function(speciesData, metaData, idCol, idColType, distMethod,
+calculateDistanceStart <- function(speciesData, metaData, idCol, idColType = NULL, distMethod,
                                    threshold = 0){
 
   # check that idCol is in the metadata df
@@ -38,18 +38,18 @@ calculateDistanceStart <- function(speciesData, metaData, idCol, idColType, dist
   }
 
   # check that the metaData is in order
-  if(idColType == "year"){
+  if(tolower(idColType) == "year"){
     if(! all.equal(rank(metaData[[idCol]]),  seq(from = 1, to = length(metaData[[idCol]]),
                                                  by = 1))) {
       stop("dataframe rows are out of order;\ndata must currently be formatted shallow to deep\nand in order. If reordering,\nmake sure you reorder the species data too")
     }
-  } else if(idColType == "depth"){
+  } else if(tolower(idColType) == "depth"){
     if(! all.equal(rank(metaData[[idCol]]),  seq(to = 1, from = length(metaData[[idCol]]),
                                                  by = -1))) {
       stop("dataframe rows are out of order;\ndata must currently be formatted shallow to deep\nand in order. If reordering,\nmake sure you reorder the species data too")
-    }  
+    }
   } else {
-    stop(paste("idColType must be either 'year' or 'depth'. You used", idCoLType))
+    stop(paste("idColType must be either 'year' or 'depth'"))
   }
 
 

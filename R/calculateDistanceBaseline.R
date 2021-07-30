@@ -18,9 +18,10 @@
 #'
 #' @examples
 #'
+#' set.seed(999)
 #' data("mite")
 #' data("mite.env")
-#' met <- metaMDS(mite, "jaccard")
+#' met <- metaMDS(mite, "jaccard", try = 100)
 #' dlist <- calcEllipseDists(metadf = mite.env, ord = met,
 #' group = "Topo", reflev = "Hummock")
 #' par(mfrow = c(2, 2))
