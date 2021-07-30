@@ -2,7 +2,7 @@
 #'
 #' A dataset containing pollen counts for Rotonuiaha, in the North Island of New Zealand.
 #'
-#' @format A data frame with 73 rows and 93 variables. The site column just records this is from Rotonuiaha. The year column is derived from radiocarbon dating. For details of the ecology of the core and site see Wilmshurst & McGlone (1996).
+#' @format A data frame with 73 rows and 96s variables. The site column just records this is from Rotonuiaha. The year column is derived from radiocarbon dating. The depth column is in cm. For details of the ecology of the core and site see Wilmshurst & McGlone (1996).
 #' @source \url{http://onlinelibrary.wiley.com/doi/10.1111/cobi.12150/abstract}
 #' @references Wilmshurst JM, McGlone MS. 1996. Forest disturbance in the central North Island, New Zealand, following the 1850 BP Taupo eruption. The Holocene 6:399–411. Available from http://journals.sagepub.com/doi/abs/10.1177/095968369600600402.
 #' @docType data
