@@ -2,7 +2,8 @@
 #'
 #' @param speciesData dataset with species abundance, pre-transformed if desired
 #' @param metaData  dataset with metadata, such as depth and age
-#' @param idCol name of column in metaData by which speciesData is ordered. Generally depth or year. Needs to be in ascending order (ie getting deeper or older), in the same order as the species data.
+#' @param idCol name of column in metaData by which speciesData is ordered. Generally depth or year. Needs to be in ascending order (ie getting deeper or older), in the same order as the species data.\
+#' @param idColType need to specify whether the idcol is a depth style or year style variable. 
 #' @param distMethod the distance method to use. See ?vegan::vegdist for options.
 #' @param threshold keeps species only where those with a total summed abundance (not frequency) of more than or equal to the threshold. Default is zero.
 #'
@@ -24,7 +25,7 @@
 #' with(distFirst, plot(x = Age, y = dist_jaccard,
 #' ylab = "Jaccard distance"))
 #'
-calculateDistanceStart <- function(speciesData, metaData, idCol, distMethod,
+calculateDistanceStart <- function(speciesData, metaData, idCol, idColType, distMethod,
                                    threshold = 0){
 
   # check that idCol is in the metadata df
@@ -37,10 +38,20 @@ calculateDistanceStart <- function(speciesData, metaData, idCol, distMethod,
   }
 
   # check that the metaData is in order
-  if(! all.equal(rank(metaData[[idCol]]),  seq(from = 1, to = length(metaData[[idCol]]),
-                                               by = 1))) {
-    stop("dataframe rows are out of order;\ndata must currently be formatted shallow to deep\nand in order. If reordering,\nmake sure you reorder the species data too")
+  if(idColType == "year"){
+    if(! all.equal(rank(metaData[[idCol]]),  seq(from = 1, to = length(metaData[[idCol]]),
+                                                 by = 1))) {
+      stop("dataframe rows are out of order;\ndata must currently be formatted shallow to deep\nand in order. If reordering,\nmake sure you reorder the species data too")
+    }
+  } else if(idColType == "depth"){
+    if(! all.equal(rank(metaData[[idCol]]),  seq(to = 1, from = length(metaData[[idCol]]),
+                                                 by = -1))) {
+      stop("dataframe rows are out of order;\ndata must currently be formatted shallow to deep\nand in order. If reordering,\nmake sure you reorder the species data too")
+    }  
+  } else {
+    stop(paste("idColType must be either 'year' or 'depth'. You used", idCoLType))
   }
+
 
   # make sure the distance method can be applied using vegdist
   if(!distMethod %in% c("manhattan", "euclidean", "canberra",
@@ -79,3 +90,4 @@ calculateDistanceStart <- function(speciesData, metaData, idCol, distMethod,
   return(ret)
 
 }
+
