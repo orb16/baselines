@@ -28,6 +28,11 @@
 calculateDistanceStart <- function(speciesData, metaData, idCol, idColType = NULL, distMethod,
                                    threshold = 0){
 
+  # check idColType has been specified
+  if(is.null(idColType)){
+    stop("idColType must be specified. choose year or depth.\nNote data must be formatted shallow to deep\nand in order")
+  }
+
   # check that idCol is in the metadata df
   if(! idCol %in% names(metaData)){
     stop(
