@@ -42,14 +42,19 @@ calculateDistanceStart <- function(speciesData, metaData, idCol, idColType = NUL
       )
   }
 
+  # ensure the idCol is numeric
+  if(!is.numeric(metaData[[idCol]])){
+    metaData[[idCol]] <- as.numeric(as.character(metaData[[idCol]]))
+  }
+
   # check that the metaData is in order
   if(tolower(idColType) == "year"){
-    if(! all.equal(rank(metaData[[idCol]]),  seq(from = 1, to = length(metaData[[idCol]]),
+    if(! identical(rank(metaData[[idCol]]),  seq(from = 1, to = length(metaData[[idCol]]),
                                                  by = 1))) {
       stop("dataframe rows are out of order;\ndata must currently be formatted shallow to deep\nand in order. If reordering,\nmake sure you reorder the species data too")
     }
   } else if(tolower(idColType) == "depth"){
-    if(! all.equal(rank(metaData[[idCol]]),  seq(to = 1, from = length(metaData[[idCol]]),
+    if(! identical(rank(metaData[[idCol]]),  seq(to = 1, from = length(metaData[[idCol]]),
                                                  by = -1))) {
       stop("dataframe rows are out of order;\ndata must currently be formatted shallow to deep\nand in order. If reordering,\nmake sure you reorder the species data too")
     }
@@ -69,6 +74,7 @@ calculateDistanceStart <- function(speciesData, metaData, idCol, idColType = NUL
   }
 
 
+  # filter such that species included only if above the threshold (default = 0)
   speciesData <- as.data.frame(speciesData[colSums(speciesData) >= threshold])
 
 
@@ -78,14 +84,16 @@ calculateDistanceStart <- function(speciesData, metaData, idCol, idColType = NUL
 
   df <- as.data.frame(as.matrix(vegan::vegdist(speciesData, method = distMethod)))
 
-  startPos <- which.min(names(df))
+# could be used if no longer requiring order to be from shallow to deep
+#  startPos <- which.min(names(df))
 
   startDist <- data.frame(df[1]); names(startDist) <- paste("dist", distMethod, sep = "_")
   startDist$id <- row.names(startDist)
   names(startDist)[grep("id", names(startDist))] <- idCol
-  startDist[[idCol]] <- as.numeric(startDist[[idCol]])
+  # as.character conversion here conservative - unlikely to be required
+  startDist[[idCol]] <- as.numeric(as.character(startDist[[idCol]]))
 
-  if(! all.equal(startDist[[idCol]], metaData[[idCol]])) {
+  if(! identical(startDist[[idCol]], metaData[[idCol]])) {
     stop("Problem with non-equal id columns")
   }
 

@@ -36,7 +36,8 @@ Calculates distance from ellipse and distance from centroid.
 
 data("mite")
 data("mite.env")
-met <- metaMDS(mite, "jaccard")
+set.seed(999)
+met <- metaMDS(mite, "jaccard", try = 50)
 dlist <- calcEllipseDists(metadf = mite.env, ord = met,
 group = "Topo", reflev = "Hummock")
 par(mfrow = c(2, 2))

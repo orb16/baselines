@@ -18,10 +18,10 @@
 #'
 #' @examples
 #'
-#' set.seed(999)
 #' data("mite")
 #' data("mite.env")
-#' met <- metaMDS(mite, "jaccard", try = 100)
+#' set.seed(999)
+#' met <- metaMDS(mite, "jaccard", try = 50)
 #' dlist <- calcEllipseDists(metadf = mite.env, ord = met,
 #' group = "Topo", reflev = "Hummock")
 #' par(mfrow = c(2, 2))
@@ -135,16 +135,33 @@ calcEllipseDists <- function(metadf,
                         reflev = "Pre-human",
                         ordiType = "sd", addConf = TRUE){
 
+  if(!is.logical(addConf)){
+    stop("addConf can only be TRUE or FALSE. You can't specify a numeric value sorry")
+  }
+
+
+  if(!ordiType %in% c("sd", "se")){
+    stop("only types se and sd accepted")
+  }
+
+  # check that the column that includes the baseline is in the dataset
   if(! group %in% names(metadf)){
     stop(
-      cat("The column name", paste0("'", group, "'"), "is not found in the metadf object, the column names of which are", paste0("'", names(metadf), "'"))
+      paste0("The group variable", " '", group, "' ", "is not found in the metadf object, the column names of which are ", "'", paste(names(metadf), collapse = ", "), "'")
       )
   }
 
+  # check that the reference level in the 'group' column is present
   if(! reflev %in% as.character(unique(metadf[[group]]))){
     stop(
-      cat(paste0("reflev '", reflev, "'"), "needs to be the column", group)
-         )
+      paste0("reflev is specified as '", reflev, "'"), "but is not present in the group column", group)
+
+  }
+
+  # check the reference level is > 1 obs
+  testColN <- sum(metadf[[group]] == reflev)
+  if(! testColN > 1){
+    stop("Reference group needs more than one obs")
   }
 
   # one method for vegan ordinations,
@@ -158,6 +175,8 @@ calcEllipseDists <- function(metadf,
     cols <- c("NMDS1", "NMDS2")
 
     if(addConf){
+      # this could be amended to take any number as per the vegan option
+      # currently set to 0.95 and a true/false option
       lt <- vegan::ordiellipse(ord, group = metaScores[[group]],
                                kind = ordiType, draw = "none", conf = 0.95, display = "sites")
     } else {
@@ -177,30 +196,49 @@ calcEllipseDists <- function(metadf,
     centreAxis2 <- lt[[reflev]]$center[[2]]
 
   } else if("boral" %in% class(ord)){
-
+    # where ordination is from boral
     ordScores <- data.frame(lvsplotData(ord,
-                                    return.vals = TRUE,
-                                    biplot = FALSE)$scaled.lvs)
+                                        return.vals = TRUE,
+                                        biplot = FALSE)$scaled.lvs)
     names(ordScores) <- c("lvs1", "lvs2")
     metaScores <- data.frame(metadf, ordScores)
 
     cols <-  c("lvs1", "lvs2")
 
-    # prehauman ellipse
+    # prehuman ellipse
     prehumanDF <- metaScores[metaScores[group] == reflev, ]
-    mat <- cov.wt(prehumanDF[cols])
+
+    w <- rep(1, nrow(prehumanDF)) # we don't offer the user to set weights
+
+    mat <- cov.wt(prehumanDF[cols], w)
+
+    if(ordiType=="se"){
+      mat$cov <- mat$cov * sum(mat$wt^2)
+    }
+    if (mat$n.obs == 1){
+      mat$cov[] <- 0
+    }
+
+
     if(addConf){
       tp <- sqrt(qchisq(0.95, 2))
     } else{
-      stop("Ellipse without 95% CI not yet implemented for boral")
+      tp <- 1    # this replicates the vegan package treatment
+      # of the scale parameter
     }
 
-    xy <- veganCovEllipse(cov = mat$cov,
-                          center = mat$center, tp)
+    if (mat$n.obs > 1) {
+      xy <- veganCovEllipse(cov = mat$cov, center = mat$center, tp)
+
+    } else {
+      stop("Need more than one point in reference group") # should be superfluous - tested at start
+    }
+
+
     refEllipseDF <- data.frame(xy,
-                      group = reflev,
-                      ellipseCenterLVS1 = mat$center[[cols[1]]],
-                      ellipseCenterLVS2 = mat$center[[cols[2]]])
+                               group = reflev,
+                               ellipseCenterLVS1 = mat$center[[cols[1]]],
+                               ellipseCenterLVS2 = mat$center[[cols[2]]])
 
     centreAxis1 <- mat$center[[cols[1]]]
     centreAxis2 <- mat$center[[cols[2]]]
@@ -236,7 +274,7 @@ calcEllipseDists <- function(metadf,
 
   dists <- apply(rgeos::gDistance(spts, phPoly, byid=TRUE), 2, min)
 
-  # fix this
+
   cent <- sp::SpatialPoints(data.frame(dim1 = centreAxis1,
                                        dim2 = centreAxis2,
                                        row.names = NULL))
