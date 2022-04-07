@@ -1,8 +1,8 @@
 Package: baselines
 Type: Package
 Title: Calculates Distance From Desired Baseline
-Version: 0.1.0
-Date: 2019-10-03
+Version: 1.0.0
+Date: 2022-04-07
 Authors@R: person("Olivia", "Burge", email = "olivia.burge@gmail.com", role = c("aut", "cre"))
 Maintainer: Olivia Burge <olivia.burge@gmail.com>
 Description: Builds off the vegan package with functions we have been using with paleo data. Calculated the ellipse around a set of points and calculates minimum distance from points to nearest edge of ellipse.
