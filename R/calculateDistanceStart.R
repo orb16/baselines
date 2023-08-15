@@ -44,6 +44,7 @@ calculateDistanceStart <- function(speciesData, metaData, idCol, idColType = NUL
 
   # ensure the idCol is numeric
   if(!is.numeric(metaData[[idCol]])){
+    cat("warning: idCol is non-numeric: forcing to numeric, but please revise your data if it was a factor")
     metaData[[idCol]] <- as.numeric(as.character(metaData[[idCol]]))
   }
 
@@ -89,7 +90,10 @@ calculateDistanceStart <- function(speciesData, metaData, idCol, idColType = NUL
 
   startDist <- data.frame(df[1]); names(startDist) <- paste("dist", distMethod, sep = "_")
   startDist$id <- row.names(startDist)
-  names(startDist)[grep("id", names(startDist))] <- idCol
+
+  # then rename to the original name
+  names(startDist)[grepl("^id$", names(startDist))] <- idCol
+
   # as.character conversion here conservative - unlikely to be required
   startDist[[idCol]] <- as.numeric(as.character(startDist[[idCol]]))
 
