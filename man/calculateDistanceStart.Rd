@@ -2,49 +2,50 @@
 % Please edit documentation in R/calculateDistanceStart.R
 \name{calculateDistanceStart}
 \alias{calculateDistanceStart}
-\title{Caculate ecological distance from first sample}
+\title{Calculate ecological distance from first sample}
 \usage{
-calculateDistanceStart(
-  speciesData,
-  metaData,
-  idCol,
-  idColType = NULL,
-  distMethod,
-  threshold = 0
-)
+calculateDistanceStart(speciesData, metaData, idCol, distMethod, threshold = 0)
 }
 \arguments{
 \item{speciesData}{dataset with species abundance, pre-transformed if desired}
 
 \item{metaData}{dataset with metadata, such as depth and age}
 
-\item{idCol}{name of column in metaData by which speciesData is ordered. Generally depth or year. Needs to be in ascending order (ie getting deeper or older), in the same order as the species data.}
-
-\item{idColType}{need to specify whether the idcol is a depth style or year style variable.}
+\item{idCol}{name of column in metaData by which speciesData is ordered. Needs to be ordered such that the "start" sample is in the first row. Needs to be in the same order as the species data.}
 
 \item{distMethod}{the distance method to use. See ?vegan::vegdist for options.}
 
-\item{threshold}{keeps species only where those with a total summed abundance (not frequency) of more than or equal to the threshold. Default is zero.}
+\item{threshold}{keeps species only where those with a total summed abundance (not frequency) of more than or equal to the threshold. Default is zero. Note that if you transformed your data, the threshold is applied to the transformed data. This will likely affect what a reasonable threshold is.}
 }
 \value{
-A dataframe with idCol and the distance for each point, including the distance from the first sample to itself.
+A dataframe with idCol and the distance for each point, including the distance from the first sample to itself. The function prints the value of the 'start' or reference level sample to which everything else is compared, and the name of the column it is derived from. This can be accessed using attributes(object)$refLevel if desired, where object is the name of the returned object.
 }
 \description{
-Caculate ecological distance from first sample
+Here we calculate ecological distance from the first sample in a dataset. Note that if you are calculating distance from the earliest sample in your dataset, this means your data will need to be reversed compared to the way it is typically ordered! i.e. if ordering by depth, you will ensure the 'deepest' sample is the first row in the dataframe. The other important note is that when you reorder your data, ensure that you reorder both the species and metadata (i.e. don't just reorder your metadata!).
 }
 \examples{
 
 ## This example uses data from the analogue package
+# note you should consider transforming your data if you haven't already
+# the transformation step is not shown here
 
 require(analogue)
 data(abernethy)
-speciesData <- abernethy[!names(abernethy) \%in\% c("Depth", "Age")]
-metaData <- abernethy[c("Depth", "Age")]
+
+# put the deepest sample first
+abernethy2 <- dplyr::arrange(abernethy, -Depth)
+
+speciesData <- abernethy2[!names(abernethy2) \%in\% c("Depth", "Age")]
+metaData <- abernethy2[c("Depth", "Age")]
 
 distFirst <- calculateDistanceStart(speciesData, metaData,
-idCol = "Age", distMethod = "jaccard", idColType = "year")
+idCol = "Depth",
+ distMethod = "jaccard")
 
 with(distFirst, plot(x = Age, y = dist_jaccard,
 ylab = "Jaccard distance"))
+
+# access the reference level of the sample
+attr(distFirst, "refLevel")
 
 }
