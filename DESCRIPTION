@@ -10,11 +10,12 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Depends: R (>= 3.1.0),
-    sp,
-    rgeos,
+    sf,
     vegan
 Imports:
-  boral
+    boral,
+    rlang,
+    dplyr
 Suggests:
   analogue
 RoxygenNote: 7.2.3
