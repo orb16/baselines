@@ -45,14 +45,10 @@ plot(met, type = "n")
 plot(dlist[["baseline_polygon"]], add = TRUE,
 col = adjustcolor("forestgreen", 0.2),
 border = NA)
-points(dlist[["distDF"]][
-dlist[["distDF"]]$Topo == "Hummock", ],
-col = "forestgreen",
-pch = 16)
-points(dlist[["distDF"]][
-dlist[["distDF"]]$Topo == "Blanket", ],
-col = "black",
-pch = 16)
+with(dlist[["distDF"]][dlist[["distDF"]]$Topo == "Hummock", ],
+points(x = NMDS1, y = NMDS2, col = "forestgreen", pch = 16))
+with(dlist[["distDF"]][dlist[["distDF"]]$Topo == "Blanket", ],
+points(x = NMDS1, y = NMDS2, col = "black", pch = 16))
 legend("topleft", pch = c(16, 16, 15),
 col = c("forestgreen", "black",
 adjustcolor("forestgreen", 0.5)),
