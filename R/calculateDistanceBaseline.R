@@ -8,12 +8,11 @@
 #' @param ordiType what sort of ordiellipse? Options are all those which ordiellipse accepts
 #' @param addConf use 95 CI or not? See ordiellipse options.
 #'
-#' @import sp
-#' @import rgeos
+#' @import sf
 #' @import vegan
 #' @import boral
 #' @importFrom stats cov.wt qchisq
-#' @return A list, with a dataframe containing the metadf and distance from baseline, second, a spatial points object. Third, the baseline ellipse created as a spatial object.
+#' @return A named list: "distSF" with the distances from baseline as a spatial point object, "distDF", a data.frame version of the same, and "baseline_polygon" an SF object of the reference baseline polygon
 #' @export
 #'
 #' @examples
@@ -29,14 +28,10 @@
 #' plot(dlist[["baseline_polygon"]], add = TRUE,
 #' col = adjustcolor("forestgreen", 0.2),
 #' border = NA)
-#' points(dlist[["all_points"]][
-#' dlist[["all_points"]]$Topo == "Hummock", ],
-#' col = "forestgreen",
-#' pch = 16)
-#' points(dlist[["all_points"]][
-#' dlist[["all_points"]]$Topo == "Blanket", ],
-#' col = "black",
-#' pch = 16)
+#' with(dlist[["distDF"]][dlist[["distDF"]]$Topo == "Hummock", ],
+#' points(x = NMDS1, y = NMDS2, col = "forestgreen", pch = 16))
+#' with(dlist[["distDF"]][dlist[["distDF"]]$Topo == "Blanket", ],
+#' points(x = NMDS1, y = NMDS2, col = "black", pch = 16))
 #' legend("topleft", pch = c(16, 16, 15),
 #' col = c("forestgreen", "black",
 #' adjustcolor("forestgreen", 0.5)),
@@ -101,12 +96,16 @@
 #' plot(dlist[["baseline_polygon"]], add = TRUE,
 #' col = adjustcolor("forestgreen", 0.2),
 #' border = NA)
-#' points(dlist[["all_points"]][dlist[["all_points"]]$Topo == "Hummock", ],
+##' plot(st_geometry(dlist[["distSF"]][dlist[["distSF"]]$Topo == "Hummock", ],),
+#' add = TRUE,
 #' col = "forestgreen",
-#' pch = 16)
-#' points(dlist[["all_points"]][dlist[["all_points"]]$Topo == "Blanket", ],
-#' col = "black",
-#' pch = 16)
+#' pch = 16
+#' )
+#' plot(st_geometry(dlist[["distSF"]][dlist[["distSF"]]$Topo == "Blanket", ],),
+#'      add = TRUE,
+#'      col = "black",
+#'      pch = 16
+#' )
 #' legend("topleft", pch = c(16, 16, 15),
 #' col = c("forestgreen", "black",
 #' adjustcolor("forestgreen", 0.5)),
@@ -117,10 +116,16 @@
 #' plot(dlist[["baseline_polygon"]], add = TRUE,
 #' col = adjustcolor("forestgreen", 0.2),
 #' border = NA)
-#' points(dlist[["all_points"]][dlist[["all_points"]]$Topo == "Hummock", ], col = "forestgreen",
-#' pch = 16)
-#' points(dlist[["all_points"]][dlist[["all_points"]]$Topo == "Blanket", ], col = "black",
-#' pch = 16)
+#' plot(st_geometry(dlist[["distSF"]][dlist[["distSF"]]$Topo == "Hummock", ],),
+#' add = TRUE,
+#' col = "forestgreen",
+#' pch = 16
+#' )
+#' plot(st_geometry(dlist[["distSF"]][dlist[["distSF"]]$Topo == "Blanket", ],),
+#'      add = TRUE,
+#'      col = "black",
+#'      pch = 16
+#' )
 #' legend("topleft", pch = c(16, 16, 15),
 #' col = c("forestgreen", "black",
 #' adjustcolor("forestgreen", 0.5)),
@@ -250,48 +255,71 @@ calcEllipseDists <- function(metadf,
 
 
 
+
+
   # calculate spatial points
-
-  allPts2 <- metaScores[cols]
-  # this can be done for both
-  spts <- sp::SpatialPoints(allPts2)
-  sptsDF <- sp::SpatialPointsDataFrame(spts,
-                                       data = metaScores[! names(metaScores) %in% cols])
+  # NA crs operates in cartesian space, which is what we want
+  spts <- sf::st_as_sf(metaScores,
+                       coords = cols,
+                       crs = NA)
 
 
 
+  # reference polygon as sf object
+  # takes and repeats the firsts point, to close the polygon
+  # this is just the polygon
+  phPoly <- st_polygon(list(as.matrix(refEllipseDF[c(1:nrow(refEllipseDF), 1), cols])))
+
+  # proper sf object of reference level polygon
+  phPolyData <- st_sfc(phPoly) %>%
+    st_as_sf() %>%
+    rename_geometry("geometry") %>%
+    dplyr::mutate({{group}} := paste(reflev))
+
+  # proper sf object of centroid point
+  cent <- sf::st_as_sf(data.frame(dim1 =
+                                    centreAxis1,
+                                  dim2 = centreAxis2,
+                                  row.names = NULL),
+                       coords = c("dim1", "dim2"),
+                       crs = NA)
 
 
 
-  phPoly <- sp::SpatialPolygons(list(sp::Polygons(srl =
-                                                    list(sp::Polygon(as.matrix(refEllipseDF[cols]), hole = FALSE)), ID = 1)))
-
-  phPolyData <- sp::SpatialPolygonsDataFrame(phPoly,
-                                             data = data.frame(lev = reflev))
-  names(phPolyData@data) <- paste(group)
+  # calculate both sets of distances at once -
+  # using the point data as the comparison
+spts$distEllipse <- sf::st_distance(spts, phPolyData)
+spts$disCentroid <- sf::st_distance(spts, cent)
 
 
+dists <- spts %>% dplyr::mutate(centroid1 = .env$centreAxis1,
+           centroid2 = .env$centreAxis2) %>%
+    dplyr::select(names(spts %>% st_drop_geometry()), .data$centroid1, .data$centroid2,
+                  .data$distEllipse, .data$disCentroid)
 
-  dists <- apply(rgeos::gDistance(spts, phPoly, byid=TRUE), 2, min)
-
-
-  cent <- sp::SpatialPoints(data.frame(dim1 = centreAxis1,
-                                       dim2 = centreAxis2,
-                                       row.names = NULL))
-
-  centDist <- rgeos::gDistance(spts, cent, byid = TRUE)
-
-  distPH <- data.frame(metaScores,
-                       centroid1 = centreAxis1,
-                       centroid2 = centreAxis2,
-                       distEllipse = dists,
-                       disCentroid = as.vector(centDist))
-
-
-
-    return(list("distDF" = distPH,
-                "baseline_polygon" = phPolyData,
-                "all_points" = sptsDF,
-                "baseline_polygon_DF" = refEllipseDF))
+  if(ncol(st_distance(spts, phPolyData)) > 1){
+    stop("error too many polygons")
   }
+
+
+  if(ncol(st_distance(spts, cent)) > 1){
+    stop("error too many centroids")
+  }
+
+
+
+
+
+  # to get the old data.frame form
+  dfOnlyCoords <- st_coordinates(dists) %>% data.frame()
+  names(dfOnlyCoords) <- cols
+  dfOnly <- data.frame(dists %>% st_drop_geometry(), dfOnlyCoords)
+
+  return(list(
+    "distSF" = dists,
+    "distDF" = dfOnly,
+    "baseline_polygon" = phPolyData # this should be the sf polygon, but rename the polygon
+  ))
+}
+
 

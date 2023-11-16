@@ -20,6 +20,10 @@ knitr::opts_chunk$set(
 
 The goal of baselines is to share code for calculating distance from baselines in ordination space. 
 
+## Update
+
+Note that baselines has recently been updated to use the `sf` package. The named output from `baselines::calcEllipseDists` has changed - please refer to the updated help (including examples). 
+
 ## Installation
 
 You can install this package from github! First you need to have `devtools` installed. If not, run `install.packages("devtools")`, before running the code below.

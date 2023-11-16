@@ -27,7 +27,7 @@ calcEllipseDists(
 \item{addConf}{use 95 CI or not? See ordiellipse options.}
 }
 \value{
-A list, with a dataframe containing the metadf and distance from baseline, second, a spatial points object. Third, the baseline ellipse created as a spatial object.
+A named list: "distSF" with the distances from baseline as a spatial point object, "distDF", a data.frame version of the same, and "baseline_polygon" an SF object of the reference baseline polygon
 }
 \description{
 Calculates distance from ellipse and distance from centroid.
@@ -45,14 +45,10 @@ plot(met, type = "n")
 plot(dlist[["baseline_polygon"]], add = TRUE,
 col = adjustcolor("forestgreen", 0.2),
 border = NA)
-points(dlist[["all_points"]][
-dlist[["all_points"]]$Topo == "Hummock", ],
-col = "forestgreen",
-pch = 16)
-points(dlist[["all_points"]][
-dlist[["all_points"]]$Topo == "Blanket", ],
-col = "black",
-pch = 16)
+with(dlist[["distDF"]][dlist[["distDF"]]$Topo == "Hummock", ],
+points(x = NMDS1, y = NMDS2, col = "forestgreen", pch = 16))
+with(dlist[["distDF"]][dlist[["distDF"]]$Topo == "Blanket", ],
+points(x = NMDS1, y = NMDS2, col = "black", pch = 16))
 legend("topleft", pch = c(16, 16, 15),
 col = c("forestgreen", "black",
 adjustcolor("forestgreen", 0.5)),
@@ -117,12 +113,16 @@ main = "Boral ordination")
 plot(dlist[["baseline_polygon"]], add = TRUE,
 col = adjustcolor("forestgreen", 0.2),
 border = NA)
-points(dlist[["all_points"]][dlist[["all_points"]]$Topo == "Hummock", ],
+plot(st_geometry(dlist[["distSF"]][dlist[["distSF"]]$Topo == "Hummock", ],),
+add = TRUE,
 col = "forestgreen",
-pch = 16)
-points(dlist[["all_points"]][dlist[["all_points"]]$Topo == "Blanket", ],
-col = "black",
-pch = 16)
+pch = 16
+)
+plot(st_geometry(dlist[["distSF"]][dlist[["distSF"]]$Topo == "Blanket", ],),
+     add = TRUE,
+     col = "black",
+     pch = 16
+)
 legend("topleft", pch = c(16, 16, 15),
 col = c("forestgreen", "black",
 adjustcolor("forestgreen", 0.5)),
@@ -133,10 +133,16 @@ plot(met, type = "n", main = "NMDS ordination")
 plot(dlist[["baseline_polygon"]], add = TRUE,
 col = adjustcolor("forestgreen", 0.2),
 border = NA)
-points(dlist[["all_points"]][dlist[["all_points"]]$Topo == "Hummock", ], col = "forestgreen",
-pch = 16)
-points(dlist[["all_points"]][dlist[["all_points"]]$Topo == "Blanket", ], col = "black",
-pch = 16)
+plot(st_geometry(dlist[["distSF"]][dlist[["distSF"]]$Topo == "Hummock", ],),
+add = TRUE,
+col = "forestgreen",
+pch = 16
+)
+plot(st_geometry(dlist[["distSF"]][dlist[["distSF"]]$Topo == "Blanket", ],),
+     add = TRUE,
+     col = "black",
+     pch = 16
+)
 legend("topleft", pch = c(16, 16, 15),
 col = c("forestgreen", "black",
 adjustcolor("forestgreen", 0.5)),
